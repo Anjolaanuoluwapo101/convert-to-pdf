@@ -2,6 +2,9 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
+$timeout = 25; // seconds
+$interval = 1; // seconds
+
 if (!isset($_GET['file'])) {
     echo json_encode(["error" => "Missing file param"]);
     exit;
@@ -13,5 +16,19 @@ if (!file_exists($file)) {
     exit;
 }
 
-$status = trim(file_get_contents($file));
-echo json_encode(["status" => $status]);
+$startStatus = trim(file_get_contents($file));
+$startTime = time();
+
+while (true) {
+    clearstatcache();
+    $currentStatus = trim(file_get_contents($file));
+    if ($currentStatus !== $startStatus || $currentStatus === 'done') {
+        echo json_encode(["status" => $currentStatus]);
+        exit;
+    }
+    if ((time() - $startTime) >= $timeout) {
+        echo json_encode(["status" => $currentStatus]);
+        exit;
+    }
+    sleep($interval);
+}
