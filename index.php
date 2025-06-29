@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   echo json_encode([
     "status_url" => "status.php?file=" . urlencode(basename($statusPath)),
-    "file_url" => "storage/converted/" . basename($outputPdf)
+    "file_url" => "download.php?file=" . urlencode(basename($outputPdf))
   ]);
   exit;
 }
